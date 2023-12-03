@@ -50,11 +50,13 @@ bool CHazeRemoval::Process(const unsigned char* indata, unsigned char* outdata, 
 	get_air_light(p_src, tmp_vec, p_Alight, rows, cols, channels);
 	get_transmission(p_src, p_tran, p_Alight, rows, cols, channels, radius = 7, omega);
 	recover(p_src, p_tran, p_dst, p_Alight, rows, cols, channels, t0);
-	p_dst->download(outdata);
-	//assign_data(outdata, p_dst, rows, cols, channels);
+	//p_dst->download(outdata);
+	assign_data(outdata, p_dst, rows, cols, channels);
+
+	
 	p_src->release();
-    p_dst->release();
-    p_tran->release();
+    	p_dst->release();
+    	p_tran->release();
 
 	
 	return ret;
