@@ -1,8 +1,8 @@
 #ifndef HAZE_REMOVAL_H
 #define HAZE_REMOVAL_H
 
-#include "opencv2/opencv.hpp"
-#include <opencv2/core/cuda.hpp>
+#include </usr/include/opencv4/opencv2/opencv.hpp>
+#include <usr/include/opencv4/opencv2/core/cuda.hpp>
 #include <vector>
 
 typedef struct _pixel {
@@ -35,7 +35,7 @@ void get_air_light(const cv::cuda::GpuMat *p_src, std::vector<Pixel> &tmp_vec, c
 
 void get_transmission(const cv::cuda::GpuMat *p_src, cv::cuda::GpuMat *p_tran, cv::Vec3d *p_Alight, int rows, int cols, int channels, int radius, double omega);
 
-void recover(const cv::cuda::GpuMat *p_src, const cv::Mat* p_tran, cv::Mat* p_dst, cv::Vec3d* p_Alight, int rows, int cols, int channels, double t0);
+void recover(const cv::cuda::GpuMat *p_src, const cv::cuda::GpuMat *p_tran, cv::cuda::GpuMat *p_dst, cv::Vec3d* p_Alight, int rows, int cols, int channels, double t0);
 void assign_data(unsigned char *outdata, const cv::cuda::GpuMat *p_dst, int rows, int cols, int channels);
 
 #endif // !HAZE_REMOVAL_H
