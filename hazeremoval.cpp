@@ -1,6 +1,7 @@
 #include "hazeremoval.h"
 #include <opencv2/core/cuda.hpp>
 #include <iostream>
+#include <opencv2/opencv.hpp>
 
 using namespace cv;
 using namespace std;
@@ -54,7 +55,7 @@ bool CHazeRemoval::Process(const unsigned char* indata, unsigned char* outdata, 
 	assign_data(outdata, p_dst, rows, cols, channels);
 
 	
-	p_src->release();
+	    p_src->release();
     	p_dst->release();
     	p_tran->release();
 
@@ -66,7 +67,7 @@ bool sort_fun(const Pixel&a, const Pixel&b) {
 	return a.val > b.val;
 }// true neu a>b va nguoc lai
 
-void get_dark_channel(const cv::Mat *p_src, std::vector<Pixel> &tmp_vec, int rows, int cols, int channels, int radius) {
+void get_dark_channel(const cv::cuda::GpuMat *p_src, std::vector<Pixel> &tmp_vec, int rows, int cols, int channels, int radius) {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
 			int rmin = cv::max(0, i - radius);
@@ -90,7 +91,7 @@ void get_dark_channel(const cv::Mat *p_src, std::vector<Pixel> &tmp_vec, int row
 	std::sort(tmp_vec.begin(), tmp_vec.end(), sort_fun);
 } //tmp_vec chua kenh toi cua hinh anh dau vao va xep giam dan
 
-void get_air_light(const cv::Mat* p_src, std::vector<Pixel>& tmp_vec, cv::Vec3d* p_Alight, int rows, int cols, int channels) {
+void get_air_light(const cv::cuda::GpuMat* p_src, std::vector<Pixel>& tmp_vec, cv::Vec3d* p_Alight, int rows, int cols, int channels) {
 	int num = int(rows * cols * 0.001);
 	double A_sum[3] = { 0, };
 	std::vector<Pixel>::iterator it = tmp_vec.begin();
@@ -106,7 +107,7 @@ void get_air_light(const cv::Mat* p_src, std::vector<Pixel>& tmp_vec, cv::Vec3d*
 	}
 }
 
-void get_transmission(const cv::Mat *p_src, cv::Mat *p_tran, cv::Vec3d *p_Alight, int rows, int cols, int channels, int radius, double omega)
+void get_transmission(const cv::cuda::GpuMat *p_src, cv::cuda::GpuMat *p_tran, cv::Vec3d *p_Alight, int rows, int cols, int channels, int radius, double omega)
 {
 	for (int i = 0; i < rows; i++) 
 	{
@@ -131,7 +132,7 @@ void get_transmission(const cv::Mat *p_src, cv::Mat *p_tran, cv::Vec3d *p_Alight
 	}
 } // tinh t
 
-void recover(const cv::Mat *p_src, const cv::Mat *p_tran, cv::Mat *p_dst, cv::Vec3d *p_Alight, int rows, int cols, int channels, double t0) {
+void recover(const cv::cuda::GpuMat *p_src, const cv::cuda::GpuMat *p_tran, cv::cuda::GpuMat *p_dst, cv::Vec3d *p_Alight, int rows, int cols, int channels, double t0) {
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
 			for (int c = 0; c < channels; c++) {
@@ -142,7 +143,7 @@ void recover(const cv::Mat *p_src, const cv::Mat *p_tran, cv::Mat *p_dst, cv::Ve
 	}
 } // tinh J
 
-void assign_data(unsigned char *outdata, const cv::Mat *p_dst, int rows, int cols, int channels) {
+void assign_data(unsigned char *outdata, const cv::cuda::GpuMat *p_dst, int rows, int cols, int channels) {
 	for (int i = 0; i < rows*cols*channels; i++) {
 		*(outdata + i) = (unsigned char)(*((double*)(p_dst->data) + i));
 	}
